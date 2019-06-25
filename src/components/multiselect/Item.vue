@@ -4,12 +4,12 @@
     @mousedown="onMouseDown"
     @mouseup="onMouseUp"
     @mouseenter="onMouseEnter"
+    @click="onClick"
   >
   </div>
 </template>
 
 <script>
-/* eslint-disable no-console */
 import VueEmitter from 'vue-emitter'
 
 export default {
@@ -50,6 +50,8 @@ export default {
         const start = this.multiselect.hoverRange[0]
         const end = this.multiselect.hoverRange[1]
 
+        // We only have to check if the item is in the rectangle described by
+        //   the two points: start (top left) and end (bottom right)
         return (this.row >= start.row && this.row <= end.row)
           && (this.col >= start.col && this.col <= end.col)
       }
@@ -67,15 +69,18 @@ export default {
 
   methods: {
     onMouseDown() {
-      this.dispatch('multiselect', 'item.mouse-down', { row: this.row, col: this.col })
+      this.dispatch('multiselect', 'item.mouse-down', this)
 
     },
+    onClick() {
+      this.dispatch('multiselect', 'item.click', this)
+    },
     onMouseUp() {
-      this.dispatch('multiselect', 'item.mouse-up', { row: this.row, col: this.col })
+      this.dispatch('multiselect', 'item.mouse-up', this)
     },
     onMouseEnter() {
       if (this.multiselect.isDragging) {
-        this.dispatch('multiselect', 'item.mouse-enter', { row: this.row, col: this.col })
+        this.dispatch('multiselect', 'item.mouse-enter', this)
       }
     },
   }
@@ -100,13 +105,24 @@ export default {
   user-select: none;
 }
 
-.is-hover {
+.item:hover,
+.is-selected:hover {
+  cursor: pointer;
+}
+
+.item.is-hover,
+.item:hover {
   background-color: #87ee90;
   /* background-color: red; */
 }
 
 .is-selected {
   background-color: rgb(64, 157, 238);
+}
+
+.is-selected.is-hover,
+.is-selected:hover {
+  background-color: rgb(122, 184, 238);
 }
 </style>
 
