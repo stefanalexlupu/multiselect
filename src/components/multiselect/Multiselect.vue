@@ -1,6 +1,40 @@
 <template>
   <div class="container" @mousedown="startDragging" @mouseup="stopDragging">
+    <div class="col">
+      <div
+        class="cell"
+        @click="selectRange({ row: 1, col: 1 }, {row: 5, col: 10})"
+        @mouseenter="hoverRange=[{ row: 1, col: 1 }, {row: 5, col: 10}]"
+        @mouseleave="hoverRange=[]"
+        @mousedown.stop=""
+        @mouseup.stop=""
+      >
+        \
+      </div>
+      <div 
+        v-for="i in 5" 
+        :key="i" 
+        class="cell" 
+        @click="selectRange({ row: i, col: 1 }, {row: i, col: 10})"
+        @mouseenter="hoverRange=[{ row: i, col: 1 }, {row: i, col: 10}]"
+        @mouseleave="hoverRange=[]"
+        @mousedown.stop=""
+        @mouseup.stop=""
+      >
+        {{ i }}
+      </div>
+    </div>
     <div v-for="col in 10" :key="col" class="col">
+      <div
+        class="cell"
+        @click="selectRange({ row: 1, col: col }, {row: 5, col: col})"
+        @mouseenter="hoverRange=[{ row: 1, col: col }, {row: 5, col: col}]"
+        @mouseleave="hoverRange=[]"
+        @mousedown.stop=""
+        @mouseup.stop=""
+      >
+        {{ col }}
+      </div>
       <Item v-for="i in 5" :key="i" :row="i" :col="col" :id="`${i}-${col}`" />
     </div>
   </div>
@@ -31,7 +65,9 @@ export default {
     this.$on('item.mouse-down', this.startDragging)
     this.$on('item.mouse-up', this.stopDragging)
     this.$on('item.mouse-enter', this.applyToRange)
-    this.$on('item.click', this.handleItemSelect)
+    this.$on('item.click', (item) => {
+      this.handleItemSelect(item, true)
+    })
   },
 
   methods: {
@@ -42,19 +78,15 @@ export default {
         this.hoverRange = [{row: item.row, col: item.col}]
         this.rangePivot = item
       }
-      
+
       if (this.selectedIds.findIndex(id => id === item.id) >= 0) {
         this.isDeselecting = true
       }
     },
     stopDragging() {
       if (this.hoverRange.length === 2) {
-        for (let i = this.hoverRange[0].row; i <= this.hoverRange[1].row; i++) {
-          for (let j = this.hoverRange[0].col; j <= this.hoverRange[1].col; j++) {
-            this.handleItemSelect(`${i}-${j}`)
-          } 
-        }
-      } 
+        this.selectRange(this.hoverRange[0], this.hoverRange[1])
+      }
 
       this.isDragging = false
       this.isDeselecting = false
@@ -91,7 +123,7 @@ export default {
       }
       this.hoverRange = [start, end]
     },
-    handleItemSelect(item) {
+    handleItemSelect(item, byClick = false) {
       const index = this.selectedIds.findIndex(element => {
         if (item.id) {
           return element === item.id
@@ -101,12 +133,21 @@ export default {
       })
 
       if (index >= 0) {
-        if (!this.isDragging || this.isDeselecting) {
+        if (byClick || this.isDeselecting) {
           this.selectedIds.splice(index, 1)
         }
       } else {
         if (!this.isDeselecting)
         this.selectedIds.push(item.id || item)
+      }
+    },
+    selectRange(start, end) {
+      if (start && end) {
+        for (let i = start.row; i <= end.row; i++) {
+          for (let j = start.col; j <= end.col; j++) {
+            this.handleItemSelect(`${i}-${j}`)
+          } 
+        }
       }
     }
   }
@@ -123,5 +164,21 @@ export default {
 .col {
   display: flex;
   flex-flow: column nowrap;
+}
+
+.cell {
+  height: 50px;
+  width: 50px;
+  margin: 5px;
+  border: 1px solid #333;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.cell:hover {
+  background-color: #dcffda;
 }
 </style>
