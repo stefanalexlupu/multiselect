@@ -1,5 +1,17 @@
 # multiselect
 
+Create a table layout that allows user to select multiple cells by dragging over a range.
+
+![demo](https://raw.githubusercontent.com/stefanalexlupu/multiselect/master/demo.gif)
+
+**Supports:**
+* dragging over range to select multiple options with UI representation of range
+* row select
+* column select
+* select all
+
+Row, column and sellect all controlls assume user intends only to select, not deselect.
+
 ## Project setup
 ```
 npm install
