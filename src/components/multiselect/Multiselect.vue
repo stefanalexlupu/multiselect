@@ -137,8 +137,9 @@ export default {
           this.selectedIds.splice(index, 1)
         }
       } else {
-        if (!this.isDeselecting)
-        this.selectedIds.push(item.id || item)
+        if (!this.isDeselecting) {
+          this.selectedIds.push(item.id || item)
+        }
       }
     },
     selectRange(start, end) {
