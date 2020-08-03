@@ -1,6 +1,14 @@
 <template>
   <div id="app">
-    <Multiselect />
+    <label for="setRowNum">
+      <p>How many rows?</p>
+      <input v-model="rowNum" type="number" id="setRowNum">
+    </label>
+    <label for="setColNum">
+      <p>How many columns?</p>
+      <input v-model="colNum" type="number" id="setColNum">
+    </label>
+    <Multiselect :rowNum="Number.parseInt(rowNum)" :colNum="Number.parseInt(colNum)" />
   </div>
 </template>
 
@@ -11,6 +19,13 @@ export default {
   name: 'app',
   components: {
     Multiselect
+  },
+
+  data() {
+    return {
+      rowNum: 10,
+      colNum: 15
+    }
   }
 }
 </script>

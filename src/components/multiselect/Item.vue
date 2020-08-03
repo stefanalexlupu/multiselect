@@ -1,20 +1,15 @@
 <template>
-  <div 
+  <div
+    :id="id"
+    :data-multiselect-cell="row + ':' + col"
     :class="['item', { 'is-hover': isHover }, { 'is-selected' : isSelected }]"
-    @mousedown="onMouseDown"
-    @mouseup="onMouseUp"
-    @mouseenter="onMouseEnter"
-    @click="onClick"
   >
   </div>
 </template>
 
 <script>
-import VueEmitter from 'vue-emitter'
 
 export default {
-  mixins: [VueEmitter],
-
   props: {
     row: {
       type: Number,
@@ -25,64 +20,16 @@ export default {
       required: true
     },
     id: {
-      type: String,
       required: true
+    },
+    isHover: {
+      type: Boolean,
+      default: false
+    },
+    isSelected: {
+      type: Boolean,
+      default: false
     }
-  },
-
-  inject: ['multiselect'],
-
-  computed: {
-    isHover() {
-      if (!this.multiselect) {
-        return false
-      }
-
-      if (this.multiselect.hoverRange.length === 0) {
-        return false
-      }
-
-      if (this.multiselect.hoverRange.length === 1) {
-        return this.multiselect.hoverRange[0].row == this.row && this.multiselect.hoverRange[0].col == this.col
-      }
-
-      if (this.multiselect.hoverRange.length === 2) {
-        const start = this.multiselect.hoverRange[0]
-        const end = this.multiselect.hoverRange[1]
-
-        // We only have to check if the item is in the rectangle described by
-        //   the two points: start (top left) and end (bottom right)
-        return (this.row >= start.row && this.row <= end.row)
-          && (this.col >= start.col && this.col <= end.col)
-      }
-
-      return false
-    },
-    isSelected() {
-      if (!this.multiselect) {
-        return false
-      }
-
-      return this.multiselect.selectedIds.findIndex(element => element === this.id) > -1
-    }
-  },
-
-  methods: {
-    onMouseDown() {
-      this.dispatch('multiselect', 'item.mouse-down', this)
-
-    },
-    onClick() {
-      this.dispatch('multiselect', 'item.click', this)
-    },
-    onMouseUp() {
-      this.dispatch('multiselect', 'item.mouse-up', this)
-    },
-    onMouseEnter() {
-      if (this.multiselect.isDragging) {
-        this.dispatch('multiselect', 'item.mouse-enter', this)
-      }
-    },
   }
 }
 </script>
